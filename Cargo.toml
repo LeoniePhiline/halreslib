@@ -1,0 +1,66 @@
+[workspace]
+resolver = "3"
+
+members = [
+  # INFRASTRUCTURE
+  #
+  # Fetch https://github.com/andreasklostermaier/halreslib/blob/main/exchange/urls/urls.csv
+  # Check database:
+  #   If database is empty, then use COPY FROM BINARY for fast import.
+  #   If database is not empty, then upsert (INSERT ON CONFLICT DO NOTHING)
+  # Scrape URLs:
+  #   Store scrape results in a separate database table
+  #   Extract title
+  #   Store content up to N bytes (as markdown?!?)
+  #   Schedule retry on failure (exponential back-off)
+  "crates/scraper",
+  # Load model.
+  # Infer (with timeout and retry!) tags, authors and summary from scraped content.
+  # Unload model at application exit.
+  "crates/inference",
+  # Handle database schema migration
+  # Provide connection
+  # Provide repository to store and retrieve
+  "crates/database",
+
+  # CSR SETUP
+  #
+  # Provide REST API for the frontend
+  "crates/backend-ntex",
+  # Build a leptos WASM package, using Thaw UI components
+  # Components make up a table with cursor-based autoloading
+  # Each table column has a filter box. Upon input, the rows are filtered on the server side.
+  "crates/frontend-leptos-csr",
+
+  # SSR SETUP
+  #
+  # Provide a backen and frontend with leptos SSR,
+  # using server functions for all data fetching.
+  # Axum merely provides the base framework.
+  # Experiment: Thread per core setup?
+  "crates/fullstack-axum-leptos-ssr",
+
+  # Binary running all backend and full stack services.
+  "crates/halreslib",
+]
+
+default-members = ["crates/halreslib"]
+
+[workspace.dependencies]
+scraper = { path = "crates/scraper" }
+inference = { path = "crates/inference" }
+database = { path = "crates/database" }
+
+backend-ntex = { path = "crates/backend-tex" }
+frontend-leptos-csr = { path = "crates/frontend-leptos-csr" }
+
+fullstack-axum-leptos-ssr = { path = "crates/fullstack-axum-leptos-ssr" }
+
+insta = { version = "1.43.1", features = ["redactions", "ron"] }
+pretty_assertions = "1.4.1"
+regex = "1.11.1"
+reqwest = { version = "0.12.15", features = ["json", "gzip", "brotli", "zstd", "rustls-tls"] }
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.12"
+tokio = { version = "1.44.2", features = ["io-std", "io-util", "macros", "net", "rt", "signal", "sync", "time"] }
+

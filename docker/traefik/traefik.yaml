@@ -1,0 +1,45 @@
+global:
+  sendAnonymousUsage: false
+
+log:
+  # Use `docker compose up` without `--detach`/`-d`
+  # or the `logs` command to debug any routing issues.
+  level: DEBUG
+
+accessLog:
+  format: json
+  fields:
+    defaultMode: keep
+    headers:
+      defaultMode: keep
+
+providers:
+  providersThrottleDuration: 2s
+  file:
+    directory: /etc/traefik/dynamic/
+  docker:
+    # Expose containers by default through Traefik. If set to false, containers
+    # that don not have a `traefik.enable=true` label will be ignored from
+    # the resulting routing configuration.
+    exposedByDefault: false
+
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+  https:
+    address: ":443"
+    http3:
+      advertisedPort: 443 # UDP port after HTTP3 initialization on TCP
+  smtp:
+    address: ":587"
+  wss:
+    address: ":1024"
+
+api:
+  # Using HTTP basic auth on the traefik api service.
+  insecure: false

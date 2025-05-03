@@ -1,0 +1,16 @@
+[package]
+name = "database"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+refinery = { version = "0.8.16", features = ["tokio-postgres"] }
+thiserror.workspace = true
+tokio-postgres = { version = "0.7.13", features = ["with-jiff-0_1"] }
+tokio.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+pretty_assertions.workspace = true
+regex.workspace = true
+serde.workspace = true

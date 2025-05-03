@@ -1,0 +1,16 @@
+http:
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          # - "<username>:<hash>"
+        removeHeader: true
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13
+  certificates:
+    - certFile: /etc/traefik/tls/_wildcard.halreslib.test.pem
+      keyFile: /etc/traefik/tls/_wildcard.halreslib.test-key.pem
+

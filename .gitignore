@@ -1,0 +1,12 @@
+/.env
+/.cargo
+/target
+
+/docker/postgres/data/
+!/docker/postgres/data/.gitkeep
+
+/docker/rust/cargo/
+!/docker/rust/cargo/.gitkeep
+
+/docker/rust/target/
+!/docker/rust/target/.gitkeep

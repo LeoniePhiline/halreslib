@@ -1,0 +1,66 @@
+---
+source: crates/database/src/lib.rs
+expression: "&value"
+---
+[
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "refinery_schema_history",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: true,
+    has_rules: false,
+    has_triggers: false,
+    row_security: false,
+  ),
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "urls",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: true,
+    has_rules: false,
+    has_triggers: true,
+    row_security: false,
+  ),
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "scraped",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: true,
+    has_rules: false,
+    has_triggers: true,
+    row_security: false,
+  ),
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "summary",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: true,
+    has_rules: false,
+    has_triggers: true,
+    row_security: false,
+  ),
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "tags",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: false,
+    has_rules: false,
+    has_triggers: true,
+    row_security: false,
+  ),
+  PgTable(
+    schema_name: "pg_temp_<number>",
+    table_name: "authors",
+    table_owner: "postgres",
+    table_space: None,
+    has_indexes: false,
+    has_rules: false,
+    has_triggers: true,
+    row_security: false,
+  ),
+]

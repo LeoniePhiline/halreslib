@@ -1,0 +1,91 @@
+services:
+  # 1. Install `mkcert`.
+  # 2. Enter `./tls/` and run `mkcert traefik.test`.
+  # 3. Enter `./dynamic/` and follow the instructions in `dynamic.yaml` to create
+  #      a new `certificates.yaml` file to configure your new certificate.
+  # 4. Add `traefik.test  127.0.0.1` to your `/etc/hosts` file.
+  # 5. Run `docker compose up`. You will see live logs to help you debug if needed.
+  # 6. Open your browser and navigate to `https://traefik.test/dashboard/`.
+  traefik:
+    image: amd64/traefik:3.3.6@sha256:5809533c5b3fdfd961aa20af1cfbbc7d0e8ce3c4c3b1ee9acb0da00b7871c53b
+    labels:
+      traefik.enable: true
+      traefik.http.routers.traefikApi.entrypoints: https
+      traefik.http.routers.traefikApi.rule: Host(`traefik.halreslib.test`)
+      traefik.http.routers.traefikApi.tls: true
+      # TODO: Enable Traefik API HTTP basic auth before deploying!
+      #       Add `"<username>:<hash>"` combinations to `traefik/dynamic/dynamic.yaml`
+      # traefik.http.routers.traefikApi.middlewares: auth@file
+      traefik.http.routers.traefikApi.service: api@internal
+    restart: always
+    ports:
+      - "80:80/tcp" #         HTTP1     transport
+      - "443:443/tcp" #   TLS HTTP1     transport, HTTP2 transport, HTTP3 initialization
+      - "443:443/udp" #   TLS HTTP3     transport, can be changed with https://doc.traefik.io/traefik/routing/entrypoints/#advertisedport
+      - "587:587/tcp" #   TLS SMTP      transport
+      - "1024:1024/tcp" # TLS WebSocket transport
+    volumes:
+      - type: bind
+        source: ./docker/traefik/traefik.yaml
+        target: /etc/traefik/traefik.yaml
+        read_only: true
+      - type: bind
+        source: ./docker/traefik/dynamic/
+        target: /etc/traefik/dynamic
+        read_only: true
+      - type: bind
+        source: ./docker/traefik/tls/
+        target: /etc/traefik/tls/
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        # Setting this to `true` does NOT make the socket read-only and adds NO security whatsoever!
+        # Apply e.g. https://github.com/Tecnativa/docker-socket-proxy/blob/master/README.md to make this more secure.
+        read_only: false
+
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    image: amd64/postgres:17.4-alpine@sha256:0ae695e3d11c7cc82cbed8f3e506233f18cdd40e3fc7622893f6a4d0772a5a09
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - type: bind
+        source: ./docker/postgres/data
+        target: /var/lib/postgresql/data
+
+  rust:
+    build:
+      args:
+        GITHUB_TOKEN: "${GITHUB_TOKEN}"
+        GID: "${GID}"
+        UID: "${UID}"
+      context: docker/rust/context/
+      dockerfile: ../Dockerfile
+      tags:
+        - halreslib-rust
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: "postgres"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+    labels:
+      # TODO: expose
+      traefik.enable: false
+    user: "${UID}:${GID}"
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+      - type: bind
+        source: ./docker/rust/cargo
+        target: /workspace/.cargo
+      - type: bind
+        source: ./docker/rust/target
+        target: /workspace/.target
+    working_dir: /workspace
+      
