@@ -66,7 +66,7 @@ services:
       context: docker/rust/context/
       dockerfile: ../Dockerfile
       tags:
-        - halreslib-rust
+        - halreslib/rust
     depends_on:
       - ollama
       - postgres
