@@ -97,7 +97,7 @@ services:
       - /dev/kfd
     environment:
       OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-8192}
-      OLLAMA_MODEL: "${OLLAMA_MODEL:-deepseek-r1:7b}"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-deepseek-r1:14b}"
     entrypoint: /usr/bin/bash
     # Exposes port 11434
     image: ollama/ollama:0.6.7-rocm@sha256:0ef8518d96df93161d3c446ec119cd60e47667e2df8a84b75bf5f88051cf5b37
