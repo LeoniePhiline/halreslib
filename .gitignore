@@ -2,6 +2,9 @@
 /.cargo
 /target
 
+/docker/ollama/data/
+!/docker/ollama/data/.gitkeep
+
 /docker/postgres/data/
 !/docker/postgres/data/.gitkeep
 

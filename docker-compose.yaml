@@ -68,6 +68,7 @@ services:
       tags:
         - halreslib-rust
     depends_on:
+      - ollama
       - postgres
     environment:
       POSTGRES_HOST: "postgres"
@@ -89,3 +90,21 @@ services:
         target: /workspace/.target
     working_dir: /workspace
       
+  ollama:
+    command: /root/entrypoint.sh
+    devices:
+      - /dev/dri
+      - /dev/kfd
+    environment:
+      OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-8192}
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-deepseek-r1:7b}"
+    entrypoint: /usr/bin/bash
+    # Exposes port 11434
+    image: ollama/ollama:0.6.7-rocm@sha256:0ef8518d96df93161d3c446ec119cd60e47667e2df8a84b75bf5f88051cf5b37
+    volumes:
+      - type: bind
+        source: ./docker/ollama/entrypoint.sh
+        target: /root/entrypoint.sh
+      - type: bind
+        source: ./docker/ollama/data
+        target: /root/.ollama

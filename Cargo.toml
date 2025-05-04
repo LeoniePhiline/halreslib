@@ -11,6 +11,7 @@ members = [
   # Scrape URLs:
   #   Store scrape results in a separate database table
   #   Extract title
+  #   Try to minimize content (try extracting `<article>`, `<main>` content, try transforming to markdown)
   #   Store content up to N bytes (as markdown?!?)
   #   Schedule retry on failure (exponential back-off)
   "crates/scraper",
