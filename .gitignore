@@ -13,3 +13,6 @@
 
 /docker/rust/target/
 !/docker/rust/target/.gitkeep
+
+/docker/traefik/tls/
+!/docker/traefik/tls/.gitkeep
